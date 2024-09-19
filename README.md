@@ -1,6 +1,6 @@
-# Chatbot with Llama AI and Coordinate-Based Data Navigation
+# YouJin(^-^)
 
-This project leverages **Llama** as the backend AI model integrated with a frontend chat interface. The coordinate system serves as a mechanism for the AI to navigate and access data stored through a custom terminal interface. Additional features will be implemented in future updates to expand the terminal's functionality, allowing for more dynamic interaction with the AI.
+YouJin utilizes **Llama** as the backend AI model integrated with a frontend chat interface. The coordinate system serves as a mechanism for the AI to navigate and access data stored through a custom terminal interface. Additional features will be implemented in future updates to expand the terminal's functionality, allowing for more dynamic interaction with the AI.
 
 ## Project Structure
 - **Frontend**: A chat interface for interacting with the AI.
@@ -81,7 +81,7 @@ When you're done working on the project, deactivate the virtual environment:
 deactivate
 ```
 
-# Future Development
+## Future Development
 
 * Backend Expansion: Future updates will include integration with the Llama AI for more advanced natural language processing and data retrieval.
 * Terminal Interface: The terminal will be enhanced with additional commands, enabling more efficient data navigation through the coordinate system.
