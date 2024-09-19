@@ -81,7 +81,7 @@ When you're done working on the project, deactivate the virtual environment:
 deactivate
 ```
 
-# Future Development
+## Future Development
 
 * Backend Expansion: Future updates will include integration with the Llama AI for more advanced natural language processing and data retrieval.
 * Terminal Interface: The terminal will be enhanced with additional commands, enabling more efficient data navigation through the coordinate system.
