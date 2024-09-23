@@ -11,10 +11,8 @@ def get_response():
     data = request.get_json()
     user_message = data.get('message')
 
-    # Print the user's message to the terminal
+    # TODO: Add more complex AI logic here instead of simple input
     print(f"User: {user_message}")
-
-    # Get the AI response from the terminal input
     bot_response = input("Your response as AI: ")
 
     return jsonify({'response': bot_response})
