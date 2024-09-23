@@ -35,19 +35,19 @@ function sendMessage() {
         botMessageDiv.textContent = data.response;
         chatbox.appendChild(botMessageDiv);
 
-        // Scroll to the bottom of the chat area
+        // Scroll to the bottom
         chatbox.scrollTop = chatbox.scrollHeight;
     })
     .catch(error => {
         console.error('Error:', error);
-        // Handle error appropriately
+        // Optionally, display an error message to the user
     });
 }
 
 document.getElementById('inputbox').addEventListener('keypress', function(event) {
-    //check if enter is pressed
+    // Check if Enter is pressed
     if (event.key === "Enter") {
-        event.preventDefault(); //prevent default action (new line or form submission)
+        event.preventDefault(); // Prevent default action
         sendMessage();
     }
 });
