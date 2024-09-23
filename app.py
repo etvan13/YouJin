@@ -1,6 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+# app.py
 
-app = Flask(__name__)
+from flask import Flask, render_template, request, jsonify
+from backend.response_generator import generate_response
+
+app = Flask(__name__, template_folder='frontend/templates', static_folder='frontend/static')
 
 @app.route('/')
 def chatbot_page():
@@ -11,9 +14,7 @@ def get_response():
     data = request.get_json()
     user_message = data.get('message')
 
-    # For now, we'll just echo back the user's message with a placeholder response
-    # In the future, you can integrate your AI model here
-    bot_response = f"Echo: {user_message}"
+    bot_response = generate_response(user_message)
 
     return jsonify({'response': bot_response})
 

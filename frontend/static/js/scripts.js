@@ -1,3 +1,5 @@
+// frontend/static/js/scripts.js
+
 function sendMessage() {
     const chatbox = document.getElementById('chatbox');
     const inputbox = document.getElementById('inputbox');
@@ -5,27 +7,42 @@ function sendMessage() {
 
     if (message === '') return;
 
-    //append user messages to chat area
+    // Append user message to chat area
     const userMessageDiv = document.createElement('div');
     userMessageDiv.classList.add('message', 'user-message');
     userMessageDiv.textContent = message;
     chatbox.appendChild(userMessageDiv);
 
-    //clear input box
+    // Clear input box
     inputbox.value = '';
 
-    //temporary response placeholder
-    const chatBotResponse = "Howdy! Thanks for your message!";
-    const botMessageDiv = document.createElement('div');
-    botMessageDiv.classList.add('message', 'bot-message');
-    botMessageDiv.textContent = chatBotResponse;
-    chatbox.appendChild(botMessageDiv);
-
-    //scroll to the bottom of the chat area to see new messages
+    // Scroll to the bottom of the chat area
     chatbox.scrollTop = chatbox.scrollHeight;
 
-}
+    // Send the message to the backend
+    fetch('/get-response', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Append bot response to chat area
+        const botMessageDiv = document.createElement('div');
+        botMessageDiv.classList.add('message', 'bot-message');
+        botMessageDiv.textContent = data.response;
+        chatbox.appendChild(botMessageDiv);
 
+        // Scroll to the bottom of the chat area
+        chatbox.scrollTop = chatbox.scrollHeight;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Handle error appropriately
+    });
+}
 
 document.getElementById('inputbox').addEventListener('keypress', function(event) {
     //check if enter is pressed
