@@ -20,7 +20,7 @@ function sendMessage() {
     chatbox.scrollTop = chatbox.scrollHeight;
 
     // Send the message to the backend
-    fetch('/get-response', {
+    fetch('http://localhost:5000/get-response', {  // Updated URL with full backend address
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
