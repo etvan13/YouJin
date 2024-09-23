@@ -3,11 +3,11 @@
 from flask import Flask, render_template, request, jsonify
 from backend.response_generator import generate_response
 
-app = Flask(__name__, template_folder='frontend/templates', static_folder='frontend/static')
+app = Flask(__name__, template_folder='frontend', static_folder='frontend/static')
 
 @app.route('/')
 def chatbot_page():
-    return render_template('chatbot.html')
+    return render_template('index.html')
 
 @app.route('/get-response', methods=['POST'])
 def get_response():

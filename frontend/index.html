@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Provides link to Roboto font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Chatbot</title>
+
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+
+<body>
+
+    <div id="theme-switch-wrapper">
+        <label id="theme-label" for="theme-checkbox"></label>
+        <label class="switch">
+            <input type="checkbox" id="theme-checkbox">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
+    <div id="chat-bot">
+        <div id="chat-header">ChatBot</div>
+        <div id="chatbox"></div>
+        <div id="input-area">
+            <input type="text" id="inputbox" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- Include your JavaScript file -->
+    <script src="static/js/scripts.js"></script>
+
+</body>
+</html>

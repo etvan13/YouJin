@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def chatbot_page():
-    return render_template('chatbot.html')
+    return render_template('index.html')
 
 @app.route('/get-response', methods=['POST'])
 def get_response():
