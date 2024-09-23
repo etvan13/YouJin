@@ -60,21 +60,58 @@ Once the virtual environment is activated, install the project dependencies usin
 pip install -r requirements.txt
 ```
 
-### 4. Running the Frontend
+### 4. Running the Project
 
-To start the frontend (currently using Flask), follow these steps:
+The project runs in two parts: the frontend (user interface) and the backend (API server). Follow the instructions below to run both.
 
-#### a. Run the Flask Development Server:
+#### a. Start the Backend (Flask API):
 
-Make sure you are in the `project-root/frontend/` directory, and run the following command to start the Flask server:
+1. Navigate to the `backend/` directory:
+    ```bash
+    cd backend
+    ```
+
+2. Run the Flask server:
+    ```bash
+    python app.py
+    ```
+
+This will start the backend server on http://localhost:5000. It will handle the AI logic and process the messages sent from the frontend.
+
+
+#### b. Start the Frontend (HTML/CSS/JavaScript)
+
+In a new terminal, do the following:
+
+1. Navigate to the frontend/ directory:
+
+    ```bash
+    cd frontend
+    ```
+
+2. Start the frontend server using Python's built-in HTTP server:
+
+    ```bash
+    python -m http.server 8000
+    ```
+
+This will serve the frontend on http://localhost:8000.
+
+
+### 5. Access the Chat Interface
+
+Once both servers are running, open your web browser and navigate to:
 
 ```bash
-python TestFrontEnd.py
+http://localhost:8000/
 ```
 
-This will start the frontend on http://localhost:5000/. You can interact with the AI via the chat interface in your browser.
+From here, you can interact with the chatbot via the user interface.
 
-### 5. Deactivate the Virtual Environment (When Done)
+* When you send a message from the frontend, it will be sent to the backend (running on http://localhost:5000).
+* The backend processes the message and responds, and the frontend updates the chat interface with the response.
+
+### 6. Deactivate the Virtual Environment (When Done)
 
 When you're done working on the project, deactivate the virtual environment:
 ```bash
