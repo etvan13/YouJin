@@ -3,6 +3,7 @@ class Coordinate:
     def __init__(self):
         self.coordinates = [0] * 5  # Initialize six coordinates
         self.universes = 0 # Initialize universes coordinate
+        self.img_universe = 0  # Track the imaginary universe
 
     # Copy constructor
     def copy(self):
@@ -104,8 +105,23 @@ class Coordinate:
         return digits
     
     # Returns universe count (Amount of times overflow happens)
-    def univ_count(self):
+    def get_univ(self):
         return self.universes  # Return the number of universes
+    
+    def set_univ(self, delta):
+        self.universes = delta
+
+    # Returns imaginary universe count
+    def get_img_univ(self):
+        return self.img_universe  # Return the number of imaginary universes
+    
+    def set_img_univ(self, delta):
+        self.img_universe = delta
+
+    def reset_img_univ(self):
+        """Reset the universe value to 0."""
+        self.img_universe = self.universes
+
 
     # Takes a separate coordinate and returns the distance between the two in coordinate form
     def calculate_distance(self, ref_coordinate):
