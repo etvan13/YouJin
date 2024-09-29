@@ -1,7 +1,7 @@
 class Coordinate:
     # Initialize object
     def __init__(self):
-        self.coordinates = [0] * 6  # Initialize six coordinates
+        self.coordinates = [0] * 5  # Initialize six coordinates
         self.universes = 0 # Initialize universes coordinate
 
     # Copy constructor
@@ -77,14 +77,14 @@ class Coordinate:
 
     # Returns a string coordinate given a base 10 number
     def strCoord_conv(self, number):
-        number %= (60 ** 6)  # Modulo to get the value within the current universe
+        number %= (60 ** 5)  # Modulo to get the value within the current universe
 
         digits = []
         while number > 0:
             digits.append(number % 60)
             number //= 60
 
-        while len(digits) < 6:
+        while len(digits) < 5:
             digits.append(0)
 
         return ' '.join(str(d) for d in digits)
@@ -98,7 +98,7 @@ class Coordinate:
             digits.append(number % 60)
             number //= 60
 
-        while len(digits) < 6:
+        while len(digits) < 5:
             digits.append(0)
 
         return digits
@@ -136,7 +136,7 @@ class Coordinate:
 class FractionalCoordinate(Coordinate):
     def __init__(self):
         super().__init__()
-        self.coordinates = [0.0] * 6  # Override to use floats
+        self.coordinates = [0.0] * 5  # Override to use floats
         self.universes = 0  # Keep track of universes (overflows)
 
     def copy(self):
@@ -179,8 +179,8 @@ class FractionalCoordinate(Coordinate):
             integer_part_str, fractional_part_str = coord_str.strip().split('.')
             integer_parts = integer_part_str.strip().split()
             fractional_parts = fractional_part_str.strip().split()
-            if len(integer_parts) != 6 or len(fractional_parts) != 6:
-                raise ValueError("Invalid coordinate format. Expected 6 integer and 6 fractional numbers.")
+            if len(integer_parts) != 5 or len(fractional_parts) != 5:
+                raise ValueError("Invalid coordinate format. Expected 5 integer and 5 fractional numbers.")
             integer_parts = [int(x) for x in integer_parts]
             fractional_parts = [float(x) for x in fractional_parts]
             self.coordinates = [i + f / 60 for i, f in zip(integer_parts, fractional_parts)]
@@ -192,7 +192,7 @@ class FractionalCoordinate(Coordinate):
     def coord_conv(self, number):
         # Convert a base-10 number to coordinates with floats
         digits = []
-        for _ in range(6):
+        for _ in range(5):
             digits.append(number % 60)
             number //= 60
         digits.reverse()
