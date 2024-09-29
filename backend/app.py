@@ -15,7 +15,11 @@ def get_response():
     print(f"User: {user_message}")
     bot_response = input("Your response as AI: ")
 
+    # Connect to the terminal (sending user message and bot response)
+
     return jsonify({'response': bot_response})
+
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True, threaded=True)
