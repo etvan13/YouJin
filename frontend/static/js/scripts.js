@@ -1,5 +1,6 @@
 // frontend/static/js/scripts.js
 
+// TODO: Implement form validation for message input
 function sendMessage() {
     const chatbox = document.getElementById('chatbox');
     const inputbox = document.getElementById('inputbox');
