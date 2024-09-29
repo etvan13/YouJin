@@ -1,78 +1,193 @@
+import json
+import sys
 import os
-from utils.coordinate import Coordinate, FractionalCoordinate
 
-# Import command classes
+if __name__ == "__main__":
+    # Add the parent directory to sys.path to locate utils when running as a script
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+    from terminal.utils.coordinate import Coordinate, FractionalCoordinate
+    from terminal.utils.universe import UniverseTraversalStrategy
+    from terminal.utils.universe import (
+        LocalUniverseStrategy,
+        PersistentUniverseStrategy,
+        DynamicUniverseStrategy
+    )
+    from terminal.terminal_commands.store_conversation_block import StoreConversationBlockCommand
+
+else:
+    # Use relative imports when running as part of a package
+    from .utils.coordinate import Coordinate, FractionalCoordinate
+    from .utils.universe import UniverseTraversalStrategy
+    from .utils.universe import (
+        LocalUniverseStrategy,
+        PersistentUniverseStrategy,
+        DynamicUniverseStrategy
+    )
+    from .terminal_commands.store_conversation_block import StoreConversationBlockCommand
+
+
+
 
 # Add new command imports here
 
 class Terminal:
-    def __init__(self):
-        self.coordinate = Coordinate()  # Initialize the coordinate object
+    def __init__(self, universe_strategy='local'):
+        # Initialize coordinate and load saved state
+        self.coordinate = Coordinate()
+        
+        terminal_dir = os.path.dirname(os.path.abspath(__file__))
+        self.data_directory = os.path.join(terminal_dir, 'data')
+        self.coordinate_file = os.path.join(self.data_directory, 'current_coordinate.json')
+        
+        self.load_saved_coordinate()
+        self.coordinate.reset_img_univ()
+        self.set_universe_strategy(universe_strategy)  # Set initial universe strategy
+
+
+        # Command dictionary for text-based input
         self.commands = {
             "help": self.show_help,
             "greetings": self.greet,
-            "forwards": self.forwards,
-            "backwards": self.backwards,
+            "forwards": self.forwards_interactive,
+            "backwards": self.backwards_interactive,
+            "store_block": self.store_conversation_block_interactive,
+            "universe_type": self.set_universe_strategy_interactive,
             # Add new commands here
         }
 
-    # Clear the console screen
+    #### DYNAMIC FUNCTIONS (*** FOR USE WITH BACKEND ***) ####
+
+    def update_coordinate(self, delta): 
+        """
+        Let's you adjust the coordinate by delta amount 
+        """
+        # Call the interactive command
+        if delta > 0:
+            return self.forwards_interactive(delta)
+        else:
+            return self.backwards_interactive(abs(delta))
+
+    def store_conversation_block(self, conversation_block, increment_value=1):
+        """
+        Stores the conversation block upon a certain coordinate.
+        Default increments the coordinate by 1, but you can increment it however.
+        """
+        return self.store_conversation_block_interactive(conversation_block, increment_value)
+        
+    def set_universe_strategy(self, input_value):
+        """
+        Set the universe traversal strategy programmatically.
+        Accepts either a number or a strategy name.
+        """
+        return self.set_universe_strategy_interactive(input_value)
+
+
+    #### UTILITY FUNCTIONS ####
+
     @staticmethod
     def newpage():
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    # Header message of terminal
     def default_message(self):
         self.newpage()
-        return f"{self.coordinate.get_coordinates()}\n" + "Type 'help' for a list of commands.\n"
-    
-    # Checks the inputted command for validity returning its output
+        return f"{self.coordinate.get_coordinates()}\nType 'help' for a list of commands.\n"
+
     def process_command(self, command):
         if command in self.commands:
             response = self.commands[command]()
         else:
             response = "Unknown command."
-        return self.default_message() + "\n" + response + "\n"  # Append a newline
+        return f"{self.default_message()}\n{response}\n"
 
-    # Runs the current Terminal
+    def save_coordinate(self):
+        os.makedirs(self.data_directory, exist_ok=True)
+        coordinate_data = {
+            "coordinate": self.coordinate.get_coordinates(),
+            "coordinate_list": self.coordinate.get_coordinates_list(),
+            "universe": self.coordinate.get_univ(),
+        }
+        with open(self.coordinate_file, 'w') as file:
+            json.dump(coordinate_data, file, indent=4)
+        print(f"Coordinate saved: {coordinate_data}")
+
+    def load_saved_coordinate(self):
+        if os.path.exists(self.coordinate_file):
+            with open(self.coordinate_file, 'r') as file:
+                coordinate_data = json.load(file)
+                self.coordinate.coordinates = coordinate_data.get("coordinate_list", [0, 0, 0, 0, 0])
+                self.coordinate.set_univ(coordinate_data.get("real_universe", 0))
+                self.coordinate.reset_img_univ()  # Reset iuniverse to real universe after loading
+            print(f"Coordinate loaded: {coordinate_data}")
+        else:
+            print("No saved coordinate found. Starting from [0, 0, 0, 0, 0].")
+
+    #### TEXT-BASED INPUT COMMANDS (INTERACTIVE) ####
+
     def run(self):
-        # Start the terminal with the default message
-        print(self.default_message())  
+        print(self.default_message())
         while True:
             command = input("> ").lower()
-            output = self.process_command(command)
-            print(output)
             if command == "exit":
                 break
-    
-    # Filler for adding external commands
-    def add_external_command(self, command_name, command_function):
-        self.commands[command_name] = command_function
+            output = self.process_command(command)
+            print(output)
 
-    ####COMMANDS####
-    
-    # Dynamically prints a list of available commands
     def show_help(self):
-        command_list = sorted(self.commands.keys())  # Sort for readability
+        command_list = sorted(self.commands.keys())
         help_text = "\n".join(f"- {cmd}" for cmd in command_list)
         return help_text
-    
-    # Returns a greeting
+
     def greet(self):
         return "Hello Universe!"
 
-    # Moves the coordinate object forwards 1
-    def forwards(self):
-        self.coordinate.increment()
-        return "Moved forwards."
+    def forwards_interactive(self, delta=1):
+        """
+        Interactive logic for moving the coordinate forward.
+        """
+        self.coordinate.spec_change(delta)
+        self.save_coordinate()
+        return f"Moved forwards by {delta}."
 
-    # Moves the coordinate object backwards 1
-    def backwards(self):
-        self.coordinate.decrement()
-        return "Moved backwards."
+    def backwards_interactive(self, delta=1):
+        """
+        Interactive logic for moving the coordinate backward.
+        """
+        self.coordinate.spec_change(-delta)
+        self.save_coordinate()
+        return f"Moved backwards by {delta}."
+
+    def store_conversation_block_interactive(self, conversation_block=None, increment_value=1):
+        """
+        Interactive logic for storing a conversation block.
+        Prompts for input if no conversation block is provided.
+        """
+        if conversation_block is None:
+            user_message = input("Input user part of block: ")
+            ai_response = input("Input AI part of block: ")
+            conversation_block = {"user": user_message, "bot": ai_response}
+        
+        # Initialize and run the command to store the conversation block
+        command = StoreConversationBlockCommand(self, conversation_block, increment_value)
+        command.run()
+        return f"Conversation block stored. Coordinate incremented by {increment_value}."
     
+    def set_universe_strategy_interactive(self, input_value=None):
+        """
+        Interactive command to select the universe traversal strategy.
+        If input_value is provided, use it; otherwise, prompt the user interactively.
+        """
+        return UniverseTraversalStrategy.select_universe_strategy(self, input_value)
 
-    ####### Add additional Commands Above here ########
+
+
+
+    #### ADDITIONAL COMMANDS ####
+
+    # Add any new text-based input commands below this line
+    # For example:
+    # def another_command(self):
+    #     return "This is another command."
+
 
 
 ### EXAMPLE COMMANDS ###
