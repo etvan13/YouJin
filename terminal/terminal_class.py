@@ -113,13 +113,17 @@ class Terminal:
     def load_saved_coordinate(self):
         if os.path.exists(self.coordinate_file):
             with open(self.coordinate_file, 'r') as file:
-                coordinate_data = json.load(file)
-                self.coordinate.coordinates = coordinate_data.get("coordinate_list", [0, 0, 0, 0, 0])
-                self.coordinate.set_univ(coordinate_data.get("real_universe", 0))
-                self.coordinate.reset_img_univ()  # Reset iuniverse to real universe after loading
-            print(f"Coordinate loaded: {coordinate_data}")
+                content = file.read().strip()
+                if content:  # Only try to load JSON if the file is not empty
+                    coordinate_data = json.loads(content)
+                    self.coordinate.coordinates = coordinate_data.get("coordinate_list", [0, 0, 0, 0, 0])
+                    self.coordinate.universes = coordinate_data.get("universes", 0)
+                    print(f"Coordinate loaded: {coordinate_data}")
+                else:
+                    print("JSON file is empty. Starting from default coordinate.")
         else:
             print("No saved coordinate found. Starting from [0, 0, 0, 0, 0].")
+
 
     #### TEXT-BASED INPUT COMMANDS (INTERACTIVE) ####
 
