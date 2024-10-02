@@ -1,5 +1,6 @@
 # Ignore virtual environment directory
 venv/
+linEnv/
 
 # Ignore Python cache files
 __pycache__/
@@ -12,4 +13,9 @@ __pycache__/
 # Ignore macOS Finder attributes
 .DS_Store
 
+# Ignore current model directory (for now assuming dynamic ai)
+backend/ai/*
+
 # Ignore any other unnecessary files or directories
+
+terminal/data/*
