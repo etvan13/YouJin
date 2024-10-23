@@ -15,6 +15,7 @@ __pycache__/
 
 # Ignore current model directory (for now assuming dynamic ai)
 backend/ai/*
+backend/lm_studio/*
 
 # Ignore any other unnecessary files or directories
 
