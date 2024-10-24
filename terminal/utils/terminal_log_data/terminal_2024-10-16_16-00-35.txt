@@ -1,0 +1,46 @@
+output:
+49 0 0 0 0
+Type 'help' for a list of commands.
+>
+
+input:
+help
+
+output:
+49 0 0 0 0
+Type 'help' for a list of commands.
+- backwards
+- forwards
+- greetings
+- help
+- store_block
+- universe_type
+>
+
+input:
+forwards
+
+output:
+50 0 0 0 0
+Type 'help' for a list of commands.
+Moved forwards by 1.
+>
+
+input:
+backwards
+
+output:
+49 0 0 0 0
+Type 'help' for a list of commands.
+Moved backwards by 1.
+>
+
+input:
+greetings
+
+output:
+49 0 0 0 0
+Type 'help' for a list of commands.
+Hello Universe!
+>
+
