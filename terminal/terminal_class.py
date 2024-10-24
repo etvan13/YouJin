@@ -108,7 +108,6 @@ class Terminal:
         }
         with open(self.coordinate_file, 'w') as file:
             json.dump(coordinate_data, file, indent=4)
-        print(f"Coordinate saved: {coordinate_data}")
 
     def load_saved_coordinate(self):
         if os.path.exists(self.coordinate_file):
@@ -118,7 +117,6 @@ class Terminal:
                     coordinate_data = json.loads(content)
                     self.coordinate.coordinates = coordinate_data.get("coordinate_list", [0, 0, 0, 0, 0])
                     self.coordinate.universes = coordinate_data.get("universes", 0)
-                    print(f"Coordinate loaded: {coordinate_data}")
                 else:
                     print("JSON file is empty. Starting from default coordinate.")
         else:
