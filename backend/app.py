@@ -1,12 +1,5 @@
-import sys
 import os
-import importlib.util
-import inspect
-from flask import Flask, request, jsonify, Response
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app)
+import sys
 
 # Get the current directory of app.py (i.e., backend directory)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -15,75 +8,70 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..'))
 sys.path.append(PROJECT_ROOT)
 
-# Import Terminal class from the project root's terminal module
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from ai_type import AI_Type  # Import the AI_Type class
 from terminal.terminal_class import Terminal
+
+app = Flask(__name__)
+CORS(app)
+
+# Initialize the Terminal object for storing conversation blocks
 terminal = Terminal()
 
-# Path to the AI model script (run_model.py) inside the backend/ai directory
-RUN_MODEL_PATH = os.path.join(BASE_DIR, 'ai', 'run_model.py')
+# Initialize the AI system
+ai_system = AI_Type()
 
-# Function to load and run the AI model if available
-def run_model_or_fallback(user_message):
-    if os.path.exists(RUN_MODEL_PATH):
+# Store the selected AI method in an environment variable
+def select_ai_method():
+    """Prompt the user in the terminal to select an AI method, including 'user_input'."""
+    if os.getenv("SELECTED_AI_METHOD"):
+        print(f"AI method already selected: {os.getenv('SELECTED_AI_METHOD')}")
+        return  # Don't ask again if the method is already selected
+
+    available_ais = ai_system.get_available_ais()
+
+    # Include 'user_input' as an option, so it can be explicitly selected
+    print("Available AI methods:")
+    for idx, ai_name in enumerate(available_ais, start=1):
+        print(f"{idx}. {ai_name}")
+
+    while True:
         try:
-            # Dynamically load run_model.py
-            spec = importlib.util.spec_from_file_location("run_model", RUN_MODEL_PATH)
-            run_model = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(run_model)
-
-            # Check if 'process_input' accepts 'token_callback' parameter
-            process_input_sig = inspect.signature(run_model.process_input)
-            supports_streaming = 'token_callback' in process_input_sig.parameters
-
-            if supports_streaming:
-                # Function to yield tokens as a streaming response
-                def token_stream():
-                    final_response = ""
-
-                    def token_callback(token):
-                        nonlocal final_response
-                        final_response += token
-                        yield token
-
-                    # Generate response using the process_input function with streaming
-                    run_model.process_input(user_message, token_callback=token_callback)
-
-                    # Store the final response block after streaming completes
-                    conversation_block = {"user": user_message, "bot": final_response}
-                    terminal.store_conversation_block(conversation_block)
-
-                # Return the token stream as a Flask response
-                return Response(token_stream(), content_type='text/plain')
-
+            choice = int(input("Select an AI method by entering the corresponding number: "))
+            if 1 <= choice <= len(available_ais):
+                selected_ai_method = available_ais[choice - 1]
+                os.environ["SELECTED_AI_METHOD"] = selected_ai_method  # Store the selection in an environment variable
+                print(f"Selected AI method: {selected_ai_method}")
+                return
             else:
-                # If streaming is not supported, get the full response
-                bot_response = run_model.process_input(user_message)
+                print("Invalid selection. Please try again.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
-                # Store the conversation block
-                conversation_block = {"user": user_message, "bot": bot_response}
-                terminal.store_conversation_block(conversation_block)
-
-                # Return the response as JSON
-                return jsonify({'response': bot_response})
-
-        except Exception as e:
-            print(f"Error running AI model: {e}")
-            return jsonify({"response": "Sorry, something went wrong with the AI."}), 500
-    else:
-        # Fallback to manual terminal input
-        print(f"User: {user_message}")
-        bot_response = input("Your response as AI: ")
-        conversation_block = {"user": user_message, "bot": bot_response}
-        terminal.store_conversation_block(conversation_block)
-        return jsonify({'response': bot_response})
-
+# Route to process user input
 @app.route('/get-response', methods=['POST'])
 def get_response():
+    """Process user input using the selected AI method."""
+    selected_ai_method = os.getenv("SELECTED_AI_METHOD")
+    
+    if not selected_ai_method:
+        return jsonify({'error': 'No AI method selected. Please select an AI method first.'}), 400
+
     data = request.get_json()
     user_message = data.get('message')
 
-    # Route the user message to AI model or fallback
-    return run_model_or_fallback(user_message)
+    # Run the selected AI and get the response
+    bot_response = ai_system.run_selected_ai(selected_ai_method, user_message)
+
+    # Store the conversation block using the Terminal object
+    conversation_block = {"user": user_message, "bot": bot_response}
+    terminal.store_conversation_block(conversation_block)
+
+    # Return the response as JSON
+    return jsonify({'response': bot_response})
 
 if __name__ == '__main__':
+    # Prompt the user to select an AI method when the app starts
+    select_ai_method()
     app.run(port=5000, debug=True, threaded=True)
